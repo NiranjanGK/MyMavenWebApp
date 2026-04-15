@@ -1,44 +1,46 @@
 pipeline {
-    agent any   // Run on any available agent
+    agent any  // Use any available agent
 
     tools {
-        maven 'Maven'   // Must match name configured in Jenkins (Global Tool Config)
+        maven 'Maven'  // Ensure this matches the name configured in Jenkins
     }
-
     stages {
-
         stage('Checkout') {
             steps {
-                // Recommended if repo is configured in Jenkins
-                checkout scm
-
-                // OR use this if not configured:
-                // git url: 'https://github.com/NiranjanGK/MyMavenWebApp.git', branch: 'master'
+                git branch: 'master', url: 'https://github.com/NiranjanGK/MyMavenWebApp.git'
             }
         }
 
         stage('Build') {
             steps {
-                sh 'mvn clean package'
+                sh 'mvn clean package'  // Run Maven build
             }
         }
 
         stage('Test') {
             steps {
-                sh 'mvn test'
+                sh 'mvn test'  // Run unit tests
             }
         }
+
+        
+        
+       
+        stage('Deploy WAR') {
+            steps {
+                sh 'cp target/MymavenWebApp01.war /opt/tomcat/webapps/'
+            }
+        }
+
+        
     }
 
     post {
-        always {
-            echo 'Pipeline execution completed'
-        }
         success {
-            echo 'Build SUCCESS ✅'
+            echo 'Build and deployment successful!'
         }
         failure {
-            echo 'Build FAILED ❌'
+            echo 'Build failed!'
         }
     }
 }
